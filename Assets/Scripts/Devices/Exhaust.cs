@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Exhaust : MonoBehaviour
 {
-    [SerializeField] GameObject[] light;
+    //[SerializeField] GameObject[] light;
     void Start()
     {
         

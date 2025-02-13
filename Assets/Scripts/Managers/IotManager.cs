@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using static UnityEditor.PlayerSettings;
 
-[ExecuteAlways]  // Runs in Edit Mode
+// [ExecuteAlways]  // Runs in Edit Mode
 public class IotManager : MonoBehaviour
 {
     [SerializeField] private LightController[] lightControllers;
