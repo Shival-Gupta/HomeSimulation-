@@ -1,10 +1,8 @@
 using UnityEngine;
 
-// LightController implements IIoTDevice.
 public class LightController : MonoBehaviour, IIoTDevice
 {
     [Header("Identification")]
-    [Tooltip("Unique ID for this device. If left empty, the GameObject name is used.")]
     public string deviceId = "";
     public string location = "Unknown";
 
@@ -25,7 +23,7 @@ public class LightController : MonoBehaviour, IIoTDevice
         lightSource = GetComponent<Light>();
         if (lightSource == null)
         {
-            Debug.LogError($"[{DeviceId}] Missing Light component!");
+            Debug.LogWarning($"[{DeviceId}] Missing Light component. This is a simulation.");
         }
     }
 
@@ -47,7 +45,6 @@ public class LightController : MonoBehaviour, IIoTDevice
 
     public void SetHue(string newHex)
     {
-        // Ensure the hex string starts with '#'
         string formattedHex = newHex.StartsWith("#") ? newHex : "#" + newHex;
         if (ColorUtility.TryParseHtmlString(formattedHex, out Color color))
         {
@@ -62,15 +59,13 @@ public class LightController : MonoBehaviour, IIoTDevice
         }
     }
 
-    // ProcessCommand is our simple command router.
-    // In a more advanced system you might deserialize JSON into a command object.
     public void ProcessCommand(string command, string parametersJson)
     {
         switch (command.ToLower())
         {
             case "toggle":
-                if (bool.TryParse(parametersJson, out bool toggleState))
-                    Toggle(toggleState);
+                if (bool.TryParse(parametersJson, out bool state))
+                    Toggle(state);
                 break;
             case "setintensity":
                 if (float.TryParse(parametersJson, out float newIntensity))

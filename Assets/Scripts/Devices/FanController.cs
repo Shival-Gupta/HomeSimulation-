@@ -1,15 +1,14 @@
 using UnityEngine;
 
-public class FridgeController : MonoBehaviour, IIoTDevice
+public class FanController : MonoBehaviour, IIoTDevice
 {
     [Header("Identification")]
     public string deviceId = "";
     public string location = "Unknown";
 
-    [Header("Fridge Settings")]
-    public bool isOn = true;
-    [Range(-10, 10)]
-    public int temperature = 4;
+    [Header("Fan Settings")]
+    public bool isOn = false;
+    public int rpm = 400;
 
     public string DeviceId => string.IsNullOrEmpty(deviceId) ? gameObject.name : deviceId;
     public string Location => location;
@@ -17,13 +16,13 @@ public class FridgeController : MonoBehaviour, IIoTDevice
     public void Toggle(bool state)
     {
         isOn = state;
-        Debug.Log($"[{DeviceId}] Fridge turned {(state ? "ON" : "OFF")}");
+        Debug.Log($"[{DeviceId}] Fan turned {(state ? "ON" : "OFF")}");
     }
 
-    public void SetTemperature(int newTemp)
+    public void SetRPM(int newRPM)
     {
-        temperature = newTemp;
-        Debug.Log($"[{DeviceId}] Temperature set to {temperature}");
+        rpm = newRPM;
+        Debug.Log($"[{DeviceId}] RPM set to {rpm}");
     }
 
     public void ProcessCommand(string command, string parametersJson)
@@ -34,9 +33,9 @@ public class FridgeController : MonoBehaviour, IIoTDevice
                 if (bool.TryParse(parametersJson, out bool state))
                     Toggle(state);
                 break;
-            case "settemperature":
-                if (int.TryParse(parametersJson, out int temp))
-                    SetTemperature(temp);
+            case "setrpm":
+                if (int.TryParse(parametersJson, out int newRPM))
+                    SetRPM(newRPM);
                 break;
             default:
                 Debug.LogWarning($"[{DeviceId}] Unknown command: {command}");

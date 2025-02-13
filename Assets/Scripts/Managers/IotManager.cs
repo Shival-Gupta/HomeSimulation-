@@ -1,20 +1,25 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
+[ExecuteAlways]
 public class IoTManager : MonoBehaviour
 {
-    [Header("IoT Devices (Assign in Inspector)")]
-    [Tooltip("Add all IoT device scripts (e.g., LightController) here.")]
+    [Header("Assign IoT Device Scripts (implements IIoTDevice)")]
     public List<MonoBehaviour> deviceScripts = new List<MonoBehaviour>();
 
+    // Internal dictionary for fast lookup.
     private Dictionary<string, IIoTDevice> deviceDict = new Dictionary<string, IIoTDevice>();
+
+    [Header("Simulation Controls (Editor)")]
+    public string simulationDeviceId = "";
+    public string simulationCommand = "";
+    public string simulationParameters = "";
 
     private void Awake()
     {
         BuildDeviceDictionary();
     }
 
-    // Call this method to refresh or initially build the device dictionary.
     public void BuildDeviceDictionary()
     {
         deviceDict.Clear();
@@ -39,7 +44,6 @@ public class IoTManager : MonoBehaviour
         }
     }
 
-    // Called by the NetworkManager or via Inspector to process commands.
     public void ProcessDeviceCommand(string deviceId, string command, string parametersJson)
     {
         if (deviceDict.TryGetValue(deviceId, out IIoTDevice device))
@@ -50,5 +54,11 @@ public class IoTManager : MonoBehaviour
         {
             Debug.LogWarning($"[IoTManager] Device {deviceId} not found.");
         }
+    }
+
+    // This method is called by the custom editor button (or can be called manually) to simulate a command.
+    public void SimulateCommand()
+    {
+        ProcessDeviceCommand(simulationDeviceId, simulationCommand, simulationParameters);
     }
 }

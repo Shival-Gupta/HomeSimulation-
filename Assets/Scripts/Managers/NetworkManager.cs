@@ -10,14 +10,14 @@ public class NetworkManager : MonoBehaviour
     [Header("Network Settings")]
     public int port = 8080;
 
-    [Header("Manager Reference")]
+    [Header("IoT Manager Reference")]
     public IoTManager iotManager;
 
     private HttpListener listener;
     private Thread listenerThread;
     private bool isRunning = false;
 
-    // Queue to store commands from the network thread
+    // Queue to store commands from the network thread.
     private ConcurrentQueue<Action> commandQueue = new ConcurrentQueue<Action>();
 
     private void Start()
@@ -27,7 +27,7 @@ public class NetworkManager : MonoBehaviour
 
     private void Update()
     {
-        // Execute queued actions on the main thread
+        // Execute queued commands on the main thread.
         while (commandQueue.TryDequeue(out Action action))
         {
             action.Invoke();
@@ -84,7 +84,7 @@ public class NetworkManager : MonoBehaviour
         {
             try
             {
-                // This call blocks until a request comes in.
+                // Blocks until a request is received.
                 HttpListenerContext context = listener.GetContext();
                 ProcessRequest(context);
             }
@@ -102,7 +102,7 @@ public class NetworkManager : MonoBehaviour
         string responseString = "OK";
         try
         {
-            // Expected URL: http://localhost:8080/control?deviceId=Light1&command=toggle&params=true
+            // Expected URL: /control?deviceId=...&command=...&params=...
             if (request.Url.AbsolutePath.Equals("/control", StringComparison.OrdinalIgnoreCase))
             {
                 string deviceId = request.QueryString["deviceId"];
@@ -110,7 +110,7 @@ public class NetworkManager : MonoBehaviour
                 string parameters = request.QueryString["params"];
                 if (!string.IsNullOrEmpty(deviceId) && !string.IsNullOrEmpty(command))
                 {
-                    // Queue the command so it runs on the main thread.
+                    // Enqueue the command so it executes on the main thread.
                     commandQueue.Enqueue(() =>
                     {
                         if (iotManager != null)

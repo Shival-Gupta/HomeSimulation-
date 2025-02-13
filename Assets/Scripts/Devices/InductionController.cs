@@ -1,23 +1,36 @@
 using UnityEngine;
 
-public class InductionController : MonoBehaviour
+public class InductionController : MonoBehaviour, IIoTDevice
 {
-    [SerializeField] private GameObject[] cylinders;  
-    [Range(0, 3)] public int heatLevel = 0;  // Intensity from 0 to 3
+    [Header("Identification")]
+    public string deviceId = "";
+    public string location = "Unknown";
 
-    private void Update()
+    [Header("Induction Settings")]
+    [Range(0, 3)]
+    public int heatLevel = 0;
+
+    public string DeviceId => string.IsNullOrEmpty(deviceId) ? gameObject.name : deviceId;
+    public string Location => location;
+
+    public void SetHeatLevel(int level)
     {
-        UpdateInductionState();
+        heatLevel = Mathf.Clamp(level, 0, 3);
+        Debug.Log($"[{DeviceId}] Heat level set to {heatLevel}");
     }
 
-    private void UpdateInductionState()
+    public void ProcessCommand(string command, string parametersJson)
     {
-        for (int i = 0; i < cylinders.Length; i++)
+        switch (command.ToLower())
         {
-            if (cylinders[i] != null)
-                cylinders[i].SetActive(i < heatLevel);
+            case "setheat":
+            case "setheatlevel":
+                if (int.TryParse(parametersJson, out int level))
+                    SetHeatLevel(level);
+                break;
+            default:
+                Debug.LogWarning($"[{DeviceId}] Unknown command: {command}");
+                break;
         }
     }
 }
-
-

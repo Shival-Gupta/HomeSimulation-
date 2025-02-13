@@ -1,15 +1,14 @@
 using UnityEngine;
 
-public class FridgeController : MonoBehaviour, IIoTDevice
+public class GeyserController : MonoBehaviour, IIoTDevice
 {
     [Header("Identification")]
     public string deviceId = "";
     public string location = "Unknown";
 
-    [Header("Fridge Settings")]
-    public bool isOn = true;
-    [Range(-10, 10)]
-    public int temperature = 4;
+    [Header("Geyser Settings")]
+    public bool isOn = false;
+    public int temperature = 50;
 
     public string DeviceId => string.IsNullOrEmpty(deviceId) ? gameObject.name : deviceId;
     public string Location => location;
@@ -17,12 +16,12 @@ public class FridgeController : MonoBehaviour, IIoTDevice
     public void Toggle(bool state)
     {
         isOn = state;
-        Debug.Log($"[{DeviceId}] Fridge turned {(state ? "ON" : "OFF")}");
+        Debug.Log($"[{DeviceId}] Geyser turned {(state ? "ON" : "OFF")}");
     }
 
-    public void SetTemperature(int newTemp)
+    public void SetTemp(int temp)
     {
-        temperature = newTemp;
+        temperature = temp;
         Debug.Log($"[{DeviceId}] Temperature set to {temperature}");
     }
 
@@ -34,9 +33,9 @@ public class FridgeController : MonoBehaviour, IIoTDevice
                 if (bool.TryParse(parametersJson, out bool state))
                     Toggle(state);
                 break;
-            case "settemperature":
+            case "settemp":
                 if (int.TryParse(parametersJson, out int temp))
-                    SetTemperature(temp);
+                    SetTemp(temp);
                 break;
             default:
                 Debug.LogWarning($"[{DeviceId}] Unknown command: {command}");
