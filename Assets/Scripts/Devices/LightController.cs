@@ -1,102 +1,87 @@
-/*using UnityEngine;
+using UnityEngine;
 
-public class LightController : MonoBehaviour
+// LightController implements IIoTDevice.
+public class LightController : MonoBehaviour, IIoTDevice
 {
+    [Header("Identification")]
+    [Tooltip("Unique ID for this device. If left empty, the GameObject name is used.")]
+    public string deviceId = "";
+    public string location = "Unknown";
+
+    [Header("Light Settings")]
+    public bool isOn = false;
+    [Range(0f, 2f)]
+    public float intensity = 1.0f;
+    [Tooltip("Hex color (e.g., #FFFFFF or FFFFFF)")]
+    public string hexColor = "#FFFFFF";
+
     private Light lightSource;
+
+    public string DeviceId => string.IsNullOrEmpty(deviceId) ? gameObject.name : deviceId;
+    public string Location => location;
 
     private void Awake()
     {
         lightSource = GetComponent<Light>();
-    }
-
-    public void SetLightIntensity(float intensity)
-    {
-        if (lightSource != null)
-            lightSource.intensity = intensity;
-    }
-
-    public void SetLightColor(Color color)
-    {
-        if (lightSource != null)
-            lightSource.color = color;
-    }
-
-    public void ToggleLight(bool state)
-    {
-        if (lightSource != null)
-            lightSource.enabled = state;
-    }
-}
-*/
-
-using UnityEngine;
-
-public class LightController : MonoBehaviour
-{
-    private Light lightComponent;
-    public bool isOn = true;
-    public float intensity = 1.0f;
-    public string hexColor = "#FFFFFF";
-
-    private void Awake()
-    {
-        lightComponent = GetComponent<Light>();
-
-        if (lightComponent == null)
+        if (lightSource == null)
         {
-            Debug.LogError($"Light component missing on {gameObject.name}. Please add a Light component.", this);
-            return;
+            Debug.LogError($"[{DeviceId}] Missing Light component!");
         }
-
-        
-        ApplyLightSettings();
     }
 
-    public void ToggleLight(bool state)
+    public void Toggle(bool state)
     {
         isOn = state;
-        if (lightComponent != null)
-        {
-            lightComponent.enabled = isOn;
-            Debug.Log($"Light {gameObject.name} toggled {(isOn ? "ON" : "OFF")}");
-        }
+        if (lightSource != null)
+            lightSource.enabled = state;
+        Debug.Log($"[{DeviceId}] Toggled {(state ? "ON" : "OFF")}");
     }
 
-    public void SetLightIntensity(float newIntensity)
+    public void SetIntensity(float newIntensity)
     {
-        intensity = Mathf.Clamp(newIntensity, 0f, 2f); 
-        if (lightComponent != null)
-        {
-            lightComponent.intensity = intensity;
-        }
+        intensity = Mathf.Clamp(newIntensity, 0f, 2f);
+        if (lightSource != null)
+            lightSource.intensity = intensity;
+        Debug.Log($"[{DeviceId}] Intensity set to {intensity}");
     }
 
-    public void SetHue(string hex)
+    public void SetHue(string newHex)
     {
-        if (!hex.StartsWith("#"))
+        // Ensure the hex string starts with '#'
+        string formattedHex = newHex.StartsWith("#") ? newHex : "#" + newHex;
+        if (ColorUtility.TryParseHtmlString(formattedHex, out Color color))
         {
-            hex = "#" + hex;  
-        }
-
-        if (ColorUtility.TryParseHtmlString(hex, out Color color))
-        {
-            hexColor = hex;
-            if (lightComponent != null)
-            {
-                lightComponent.color = color;
-                Debug.Log($"Light {gameObject.name} color set to {hex}");
-            }
+            hexColor = formattedHex;
+            if (lightSource != null)
+                lightSource.color = color;
+            Debug.Log($"[{DeviceId}] Color set to {hexColor}");
         }
         else
         {
-            Debug.LogError($"Invalid hex color: {hex}. Use format #RRGGBB.");
+            Debug.LogError($"[{DeviceId}] Invalid hex color: {newHex}");
         }
     }
 
-    private void ApplyLightSettings()
+    // ProcessCommand is our simple command router.
+    // In a more advanced system you might deserialize JSON into a command object.
+    public void ProcessCommand(string command, string parametersJson)
     {
-        ToggleLight(isOn);
-        SetLightIntensity(intensity);
-        SetHue(hexColor);
+        switch (command.ToLower())
+        {
+            case "toggle":
+                if (bool.TryParse(parametersJson, out bool toggleState))
+                    Toggle(toggleState);
+                break;
+            case "setintensity":
+                if (float.TryParse(parametersJson, out float newIntensity))
+                    SetIntensity(newIntensity);
+                break;
+            case "sethue":
+                SetHue(parametersJson);
+                break;
+            default:
+                Debug.LogWarning($"[{DeviceId}] Unknown command: {command}");
+                break;
+        }
     }
 }

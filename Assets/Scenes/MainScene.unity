@@ -152,6 +152,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 794320714}
+  - {fileID: 1098336120}
   - {fileID: 2075746825}
   - {fileID: 804640703}
   m_Father: {fileID: 0}
@@ -1377,49 +1378,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b977a1f471d76f428471d34f65ebffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lightControllers:
+  deviceScripts:
   - {fileID: 9088302887155089148}
   - {fileID: 4970549498235367890}
-  - {fileID: 8636327157634288976}
-  - {fileID: 9042060613783839260}
-  - {fileID: 4824188301697667983}
-  - {fileID: 7767646819801395843}
-  - {fileID: 7047775167362729348}
-  tvController: {fileID: 804640702}
-  inductionController: {fileID: 804640701}
-  fridgeController: {fileID: 804640705}
-  acController: {fileID: 804640706}
-  washingMachineController: {fileID: 804640704}
-  tvOn: 1
-  inductionHeat: 0
-  fridgeTemperature: 4
-  acTemperature: 25
-  acFanSpeed: 1
-  acOn: 0
-  acEcoMode: 0
-  washingMachineOn: 0
-  lightSettings:
-  - isOn: 1
-    intensity: 2
-    hexColor: ff0000
-  - isOn: 0
-    intensity: 0
-    hexColor: FFFFFF
-  - isOn: 0
-    intensity: 0
-    hexColor: FFFFFF
-  - isOn: 0
-    intensity: 0
-    hexColor: FFFFFF
-  - isOn: 0
-    intensity: 0
-    hexColor: FFFFFF
-  - isOn: 0
-    intensity: 0
-    hexColor: FFFFFF
-  - isOn: 0
-    intensity: 0
-    hexColor: FFFFFF
 --- !u!1 &804640700
 GameObject:
   m_ObjectHideFlags: 0
@@ -1692,6 +1653,52 @@ Transform:
   - {fileID: 1313023020}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1098336119
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1098336120}
+  - component: {fileID: 1098336121}
+  m_Layer: 0
+  m_Name: NetworkManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1098336120
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098336119}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 21114242}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1098336121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098336119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42c4e3f9387729744b7a7d412879e8ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  port: 8080
+  iotManager: {fileID: 794320715}
 --- !u!1 &1230180420
 GameObject:
   m_ObjectHideFlags: 0
@@ -2717,7 +2724,7 @@ MonoBehaviour:
   walkSpeed: 5
   sprintMultiplier: 2
   verticalSpeed: 5
-  mouseSensitivity: 2
+  fpsCamera: {fileID: 0}
 --- !u!1 &2066187144
 GameObject:
   m_ObjectHideFlags: 0
@@ -85482,6 +85489,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55026a9244913ac4897caf664758b96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deviceId: 
+  location: Unknown
   isOn: 0
   intensity: 0
   hexColor: '#FFFFFF'
@@ -86840,6 +86849,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55026a9244913ac4897caf664758b96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deviceId: Light2
+  location: Hall
   isOn: 0
   intensity: 0
   hexColor: '#FFFFFF'
@@ -92042,6 +92053,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55026a9244913ac4897caf664758b96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deviceId: 
+  location: Unknown
   isOn: 1
   intensity: 1
   hexColor: '#FFFFFF'
@@ -92057,6 +92070,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55026a9244913ac4897caf664758b96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deviceId: 
+  location: Unknown
   isOn: 1
   intensity: 1
   hexColor: '#FFFFFF'
@@ -104564,6 +104579,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55026a9244913ac4897caf664758b96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deviceId: 
+  location: Unknown
   isOn: 0
   intensity: 0
   hexColor: '#FFFFFF'
@@ -108217,6 +108234,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55026a9244913ac4897caf664758b96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deviceId: 
+  location: Unknown
   isOn: 1
   intensity: 1
   hexColor: '#FFFFFF'
@@ -108232,6 +108251,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55026a9244913ac4897caf664758b96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deviceId: 
+  location: Unknown
   isOn: 1
   intensity: 1
   hexColor: '#FFFFFF'
@@ -109841,6 +109862,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55026a9244913ac4897caf664758b96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deviceId: 
+  location: Unknown
   isOn: 0
   intensity: 0
   hexColor: '#FFFFFF'
@@ -118144,6 +118167,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55026a9244913ac4897caf664758b96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deviceId: 
+  location: Unknown
   isOn: 0
   intensity: 0
   hexColor: '#FFFFFF'
@@ -121475,6 +121500,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55026a9244913ac4897caf664758b96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deviceId: 
+  location: Unknown
   isOn: 0
   intensity: 0
   hexColor: '#FFFFFF'
@@ -121717,6 +121744,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55026a9244913ac4897caf664758b96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deviceId: Light1
+  location: Hall
   isOn: 1
   intensity: 2
   hexColor: '#ff0000'
@@ -122954,6 +122983,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 705507995}
   - {fileID: 559956969}
-  - {fileID: 5951168555700639897}
   - {fileID: 1051272197}
+  - {fileID: 5951168555700639897}
   - {fileID: 21114242}

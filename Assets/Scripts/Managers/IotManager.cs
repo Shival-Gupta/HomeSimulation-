@@ -1,107 +1,54 @@
 using UnityEngine;
 using System.Collections.Generic;
-using static UnityEditor.PlayerSettings;
 
-// [ExecuteAlways]  // Runs in Edit Mode
-public class IotManager : MonoBehaviour
+public class IoTManager : MonoBehaviour
 {
-    [SerializeField] private LightController[] lightControllers;
-    [SerializeField] private TVController tvController;
-    [SerializeField] private InductionController inductionController;
-    [SerializeField] private FridgeController fridgeController;
-    [SerializeField] private ACController acController;
-    [SerializeField] private WashingMachineController washingMachineController;
+    [Header("IoT Devices (Assign in Inspector)")]
+    [Tooltip("Add all IoT device scripts (e.g., LightController) here.")]
+    public List<MonoBehaviour> deviceScripts = new List<MonoBehaviour>();
 
-    public bool tvOn = false;
-    [Range(0, 3)] public int inductionHeat = 0;
+    private Dictionary<string, IIoTDevice> deviceDict = new Dictionary<string, IIoTDevice>();
 
-    [Range(-10, 10)] public int fridgeTemperature = 4;  // Adjustable in Inspector
-
-    [Range(16, 30)] public int acTemperature = 24;
-    [Range(0, 3)] public int acFanSpeed = 1;
-    public bool acOn = false;
-    public bool acEcoMode = false;
-    
-    
-    public bool washingMachineOn = false;               // Toggle in Inspector
-
-  
-
-
-    /*[System.Serializable]
-    public class LightSettings
+    private void Awake()
     {
-        public float intensity = 1.0f;
-        public Color color = Color.white;
-        public bool isOn = true;
+        BuildDeviceDictionary();
     }
 
-    public List<LightSettings> lightSettings = new List<LightSettings>();*/
-
-    [System.Serializable]
-    public class LightSettings
+    // Call this method to refresh or initially build the device dictionary.
+    public void BuildDeviceDictionary()
     {
-        public bool isOn = true;
-        [Range(0, 2)] public float intensity = 1.0f;
-        public string hexColor = "FFFFFF";
-    }
-
-    public List<LightSettings> lightSettings = new List<LightSettings>();
-
-    private void Update()
-    {
-        ApplyInspectorChanges();
-    }
-
-    private void ApplyInspectorChanges()
-    {
-        /*if (lightControllers != null && lightSettings.Count == lightControllers.Length)
+        deviceDict.Clear();
+        foreach (var script in deviceScripts)
         {
-            for (int i = 0; i < lightControllers.Length; i++)
+            if (script is IIoTDevice device)
             {
-                if (lightControllers[i] != null)
+                if (!deviceDict.ContainsKey(device.DeviceId))
                 {
-                    lightControllers[i].SetLightIntensity(lightSettings[i].intensity);
-                    lightControllers[i].SetLightColor(lightSettings[i].color);
-                    lightControllers[i].ToggleLight(lightSettings[i].isOn);
+                    deviceDict.Add(device.DeviceId, device);
+                    Debug.Log($"[IoTManager] Added device: {device.DeviceId} at {device.Location}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[IoTManager] Duplicate device ID: {device.DeviceId}");
                 }
             }
-        }*/
-
-    
-
-        if (lightControllers != null && lightSettings.Count == lightControllers.Length)
-        {
-            for (int i = 0; i < lightControllers.Length; i++)
+            else
             {
-                if (lightControllers[i] != null)
-                {
-                    lightControllers[i].ToggleLight(lightSettings[i].isOn);
-                    lightControllers[i].SetLightIntensity(lightSettings[i].intensity);
-                    lightControllers[i].SetHue(lightSettings[i].hexColor);
-                }
+                Debug.LogWarning($"[IoTManager] Script {script.name} does not implement IIoTDevice.");
             }
         }
-        if (tvController != null)
-            tvController.ToggleTV(tvOn);
+    }
 
-        if (inductionController != null)
-            inductionController.heatLevel = inductionHeat;
-
-        if (fridgeController != null)
-            fridgeController.SetTemperature(fridgeTemperature);
-
-        /*if (acController != null)
-           acController.SetTemperature(acTemperature);*/
-        if (acController != null)
+    // Called by the NetworkManager or via Inspector to process commands.
+    public void ProcessDeviceCommand(string deviceId, string command, string parametersJson)
+    {
+        if (deviceDict.TryGetValue(deviceId, out IIoTDevice device))
         {
-            acController.ToggleAC(acOn);
-            acController.SetFanSpeed(acFanSpeed);
-            acController.SetTemperature(acTemperature);
-            acController.ToggleEcoMode(acEcoMode);
+            device.ProcessCommand(command, parametersJson);
         }
-
-        if (washingMachineController != null)
-            washingMachineController.ToggleWashingMachine(washingMachineOn);
+        else
+        {
+            Debug.LogWarning($"[IoTManager] Device {deviceId} not found.");
+        }
     }
 }
